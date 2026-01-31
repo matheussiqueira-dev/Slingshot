@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slingshot Flash 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <video id="webcam" autoplay playsinline muted></video>
+      <div id="backdrop"></div>
+      <canvas id="gameCanvas"></canvas>
+
+      <div id="hud">
+        <div class="hud-left">
+          <div class="brand">
+            <span class="brand-title">Slingshot Flash 3</span>
+            <span class="brand-sub">Bubble Shooter por gestos</span>
+          </div>
+          <div class="stat">
+            <span class="label">Pontuação</span>
+            <span id="score">0</span>
+          </div>
+          <div class="stat">
+            <span class="label">Nível</span>
+            <span id="level">1</span>
+          </div>
+        </div>
+        <div class="hud-right">
+          <button id="toggleCamera" class="pill">Câmera: Off</button>
+          <button id="toggleHints" class="pill active">Copiloto: On</button>
+          <button id="calibrate" class="pill">Calibrar gesto</button>
+          <button id="pause" class="pill">Pausar</button>
+        </div>
+      </div>
+
+      <div id="assistantTip">
+        <div class="assistant-title">Copiloto Slingshot Flash 3</div>
+        <div id="assistantMessage">Sugestões inteligentes aparecerão aqui.</div>
+      </div>
+
+      <div id="gestureHint">
+        <div class="gesture-label">Gesto</div>
+        <div id="gestureStatus">Aguardando câmera...</div>
+        <div id="gestureBar"><span></span></div>
+      </div>
+
+      <div id="footer">
+        <div class="help">Pinça com o polegar + indicador, puxe e solte para lançar.</div>
+        <div id="status">Permita o acesso à câmera para jogar por gestos.</div>
+      </div>
+
+      <div id="overlay" class="hidden">
+        <div class="overlay-card">
+          <h2>Fim de jogo</h2>
+          <p>As bolhas chegaram muito perto do estilingue.</p>
+          <button id="restart">Jogar novamente</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
