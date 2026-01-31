@@ -10,6 +10,7 @@ const gestureBarEl = document.querySelector("#gestureBar span");
 
 const toggleHintsBtn = document.getElementById("toggleHints");
 const toggleCameraBtn = document.getElementById("toggleCamera");
+const toggleAutoplayBtn = document.getElementById("toggleAutoplay");
 const calibrateBtn = document.getElementById("calibrate");
 const pauseBtn = document.getElementById("pause");
 const overlayEl = document.getElementById("overlay");
@@ -43,6 +44,9 @@ const state = {
   hintsEnabled: true,
   needsHint: true,
   cameraActive: false,
+  autoplay: true,
+  autoplayDelay: 650,
+  lastAutoplayShot: 0,
   assistant: {
     target: null,
     message: "",
@@ -183,6 +187,7 @@ function initGame() {
   state.paused = false;
   state.needsHint = true;
   state.movingBubble = null;
+  state.lastAutoplayShot = performance.now();
   initGrid();
   state.currentColor = randomColor();
   state.nextColor = randomColor();
@@ -496,18 +501,19 @@ function findBestSuggestion() {
   if (!state.currentColor) return null;
 
   let best = null;
+  const targetColor = state.currentColor;
 
   for (let row = 0; row < state.grid.length; row += 1) {
     for (let col = 0; col < state.grid[row].length; col += 1) {
       const bubble = state.grid[row][col];
-      if (!bubble || bubble.color !== state.currentColor) continue;
+      if (!bubble || bubble.color !== targetColor) continue;
 
       neighbors(row, col).forEach((neighbor) => {
         if (!isValidCell(neighbor.row, neighbor.col)) return;
         if (state.grid[neighbor.row][neighbor.col]) return;
 
-        const virtual = { row: neighbor.row, col: neighbor.col, color: state.currentColor };
-        const cluster = collectCluster(neighbor.row, neighbor.col, state.currentColor, virtual);
+        const virtual = { row: neighbor.row, col: neighbor.col, color: targetColor };
+        const cluster = collectCluster(neighbor.row, neighbor.col, targetColor, virtual);
         if (cluster.length >= 3) {
           if (!best || cluster.length > best.size) {
             best = { row: neighbor.row, col: neighbor.col, size: cluster.length };
@@ -518,6 +524,50 @@ function findBestSuggestion() {
   }
 
   return best;
+}
+
+function findFallbackTarget() {
+  if (!state.grid.length) return null;
+  const mid = Math.floor(getRowCols(0) / 2);
+  let best = null;
+  let bestScore = Number.POSITIVE_INFINITY;
+
+  for (let row = 0; row < state.grid.length; row += 1) {
+    for (let col = 0; col < state.grid[row].length; col += 1) {
+      const bubble = state.grid[row][col];
+      if (!bubble) continue;
+      const score = row * 10 + Math.abs(col - mid);
+      if (score < bestScore) {
+        bestScore = score;
+        best = { row, col };
+      }
+    }
+  }
+
+  return best;
+}
+
+function autoplayStep(time) {
+  if (!state.autoplay || state.paused || state.gameOver) return;
+  if (state.movingBubble) return;
+  if (time - state.lastAutoplayShot < state.autoplayDelay) return;
+
+  const suggestion = findBestSuggestion() || findFallbackTarget();
+  let angle = -Math.PI / 2;
+  let power = 0.7;
+
+  if (suggestion) {
+    const pos = gridToWorld(suggestion.row, suggestion.col);
+    angle = Math.atan2(pos.y - state.shooter.y, pos.x - state.shooter.x);
+    angle = clamp(angle, state.config.minAngle, state.config.maxAngle);
+    power = 0.65;
+  }
+
+  state.aim.angle = angle;
+  state.aim.power = power;
+  state.aim.active = true;
+  shootBubble(angle, power);
+  state.lastAutoplayShot = time;
 }
 
 function updateAssistant() {
@@ -1016,6 +1066,15 @@ function toggleHints() {
   state.needsHint = true;
 }
 
+function toggleAutoplay() {
+  state.autoplay = !state.autoplay;
+  toggleAutoplayBtn.classList.toggle("active", state.autoplay);
+  toggleAutoplayBtn.textContent = state.autoplay ? "Autoplay: On" : "Autoplay: Off";
+  if (state.autoplay) {
+    state.lastAutoplayShot = performance.now();
+  }
+}
+
 function startCalibration() {
   if (!state.gesture.available) {
     updateStatus("Mostre a mao para calibrar.");
@@ -1050,6 +1109,7 @@ function gameLoop(time) {
   if (!state.paused && !state.gameOver) {
     updateMovingBubble(dt);
     updateAssistant();
+    autoplayStep(time);
   }
 
   draw();
@@ -1081,6 +1141,7 @@ function bindEvents() {
   canvas.addEventListener("pointerleave", handlePointerUp);
 
   toggleHintsBtn.addEventListener("click", toggleHints);
+  toggleAutoplayBtn.addEventListener("click", toggleAutoplay);
   toggleCameraBtn.addEventListener("click", toggleCamera);
   calibrateBtn.addEventListener("click", calibrateGesture);
   pauseBtn.addEventListener("click", togglePause);

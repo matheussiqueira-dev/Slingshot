@@ -1,6 +1,14 @@
 # Slingshot Flash 3
 
+![GitHub last commit](https://img.shields.io/github/last-commit/matheussiqueira-dev/Slingshot)
+![GitHub repo size](https://img.shields.io/github/repo-size/matheussiqueira-dev/Slingshot)
+![GitHub issues](https://img.shields.io/github/issues/matheussiqueira-dev/Slingshot)
+![GitHub stars](https://img.shields.io/github/stars/matheussiqueira-dev/Slingshot?style=social)
+
 Bubble Shooter controlado por gestos com suporte a webcam e copiloto estrategico em tempo real. O jogo roda no navegador e usa MediaPipe Hands para detectar pinca (polegar + indicador) e a fisgada do estilingue.
+
+## Screenshot
+![Screenshot do jogo](assets/screenshot.svg)
 
 ## Visao geral
 Slingshot Flash 3 e um prototipo jogavel com foco em acessibilidade, interface limpa e jogabilidade intuitiva. O fundo e a propria captura da webcam (com blur leve), enquanto as bolhas e a HUD ficam em primeiro plano.
@@ -11,6 +19,7 @@ Slingshot Flash 3 e um prototipo jogavel com foco em acessibilidade, interface l
 - HUD simples, com botoes autoexplicativos e status em tempo real.
 - Calibracao de gestos para melhorar precisao e conforto.
 - Fallback total para mouse (clique, arraste e solte).
+- Autoplay para demonstracoes e gravacao de tela.
 
 ## Stack
 - HTML5 Canvas + JavaScript (render e logica do jogo)
@@ -33,6 +42,7 @@ O sistema tenta selecionar automaticamente a BRIO 305 pelo nome. Ao ativar a cam
 - **Webcam**: pinça (polegar + indicador), puxe para tras e solte para lancar.
 - **Mouse**: clique e arraste para tras, solte para lancar.
 - **Copiloto**: botao "Copiloto: On/Off".
+- **Autoplay**: botao "Autoplay: On/Off".
 - **Calibrar gesto**: refina a sensibilidade para sua mao.
 
 ## Calibracao de gestos
