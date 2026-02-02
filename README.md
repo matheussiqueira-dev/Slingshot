@@ -6,12 +6,12 @@
 [![Last commit](https://img.shields.io/github/last-commit/matheussiqueira-dev/Slingshot?style=flat-square)](https://github.com/matheussiqueira-dev/Slingshot/commits/main)
 [![License](https://img.shields.io/github/license/matheussiqueira-dev/Slingshot?style=flat-square)](#licença)
 
-[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/docs/Web/JavaScript)
 [![Canvas](https://img.shields.io/badge/Canvas-2D-111111?style=flat-square)](https://developer.mozilla.org/docs/Web/API/Canvas_API)
 
-Experiência arcade de bubble shooter com controle por webcam e estratégia em tempo real.
+Bubble shooter com controle por mouse, dicas táticas locais e foco em performance.
 
 ## Demo
 
@@ -19,74 +19,38 @@ Experiência arcade de bubble shooter com controle por webcam e estratégia em t
 
 ## Visão Geral
 
-Slingshot combina rastreamento de mãos com um shooter baseado em física e um motor de dicas estratégicas local. O foco é oferecer jogabilidade rápida, feedback visual imediato e decisões táticas sem dependências externas de IA.
+Slingshot combina física em canvas com uma camada de dicas de jogada para acelerar a tomada de decisão. O jogo funciona no navegador e dispensa instalação.
 
 ## Principais Recursos
 
-- Controle por gesto (pinch) com webcam
-- Fisica e colisão em canvas
-- Dicas estratégicas locais (sem chamadas externas)
-- Sistema de pontuação e combos
-- Interface focada em clareza e performance
-
-## Tecnologias
-
-- React + TypeScript
-- Vite
-- Canvas 2D
-- MediaPipe Hands
-- Tailwind (via CDN)
+- Controle por mouse com mira elástica
+- Dicas de jogada calculadas localmente
+- Ricochete lateral e grade hexagonal
+- Recorde salvo no navegador
+- Interface responsiva
 
 ## Como Rodar Localmente
 
-### Pré‑requisitos
+### Opção 1: abrir direto no navegador
 
-- Node.js instalado
+Abra o arquivo `index.html`.
 
-### Instalação
-
-```bash
-npm install
-```
-
-### Desenvolvimento
+### Opção 2: servidor local simples
 
 ```bash
-npm run dev
+python -m http.server 8000
 ```
 
-Abra: `http://localhost:3000`
-
-### Build de Produção
-
-```bash
-npm run build
-```
-
-### Preview do Build
-
-```bash
-npm run preview
-```
-
-## Permissões de Câmera
-
-O navegador pedirá acesso à câmera. Sem essa permissão o controle por gesto não funciona.
+Acesse: `http://localhost:8000`
 
 ## Estrutura do Projeto
 
 ```
-assets/               # mídias do projeto (gif demo)
-components/           # UI e game loop
-services/             # lógica de estratégia local
+assets/        # mídia (gif de demo)
+index.html     # layout
+main.js        # lógica do jogo
+styles.css     # estilos
 ```
-
-## Roadmap
-
-- [ ] Publicar o código completo do jogo
-- [ ] Refinar a física de colisão
-- [ ] Melhorias de acessibilidade e onboarding
-- [ ] Publicar demo jogável
 
 ## Licença
 
