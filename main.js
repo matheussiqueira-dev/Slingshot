@@ -7,6 +7,7 @@ const levelEl = document.getElementById("level");
 const statusEl = document.getElementById("status");
 const assistantMessageEl = document.getElementById("assistantMessage");
 
+const toggleGestureBtn = document.getElementById("toggleGesture");
 const toggleHintsBtn = document.getElementById("toggleHints");
 const pauseBtn = document.getElementById("pause");
 const overlayEl = document.getElementById("overlay");
@@ -53,6 +54,7 @@ const state = {
   level: 1,
   paused: false,
   gameOver: false,
+  gestureEnabled: false,
   hintsEnabled: true,
   needsHint: true,
   assistant: {
@@ -81,6 +83,8 @@ const state = {
   },
   lastTime: 0,
 };
+
+let gestureManager = null;
 
 function degToRad(deg) {
   return (deg * Math.PI) / 180;
@@ -159,7 +163,7 @@ function initGame() {
   updateScore();
   updateBestScore();
   updateLevel();
-  updateStatus("Pronto. Use o mouse para mirar e lançar.");
+  updateStatus("Pronto. Arraste para mirar e lançar.");
 }
 
 function updateScore() {
@@ -191,6 +195,71 @@ function loadBestScore() {
   const saved = Number.parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
   state.bestScore = Number.isFinite(saved) ? saved : 0;
   updateBestScore();
+}
+
+function supportsGestures() {
+  return typeof window.Hammer !== "undefined";
+}
+
+function shouldEnableGestures() {
+  if (!supportsGestures()) return false;
+  const coarse = typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
+  const touch = typeof navigator !== "undefined" && navigator.maxTouchPoints > 0;
+  return coarse || touch;
+}
+
+function updateGestureButton() {
+  if (!toggleGestureBtn) return;
+  toggleGestureBtn.textContent = state.gestureEnabled ? "Gestos: Ativos" : "Gestos: Desligados";
+  toggleGestureBtn.classList.toggle("active", state.gestureEnabled);
+}
+
+function startAimFromInput(x, y) {
+  state.input.dragging = true;
+  state.input.dragStart = { x, y };
+  state.aim.active = true;
+}
+
+function releaseShotFromInput(x, y) {
+  if (!state.input.dragging) return;
+  state.input.dragging = false;
+
+  const pullX = state.input.dragStart.x - x;
+  const pullY = state.input.dragStart.y - y;
+  const dist = Math.hypot(pullX, pullY);
+  const power = clamp(dist / (state.width * 0.3), 0, 1);
+  if (power > 0.08) {
+    const angle = Math.atan2(pullY, pullX);
+    shootBubble(clamp(angle, state.config.minAngle, state.config.maxAngle), power);
+  }
+  state.aim.active = false;
+}
+
+function setupGestures() {
+  if (!supportsGestures()) return;
+  if (gestureManager) {
+    gestureManager.destroy();
+    gestureManager = null;
+  }
+
+  gestureManager = new Hammer.Manager(canvas);
+  const pan = new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 2 });
+  gestureManager.add(pan);
+
+  gestureManager.on("panstart", (event) => {
+    if (!state.gestureEnabled || state.paused || state.gameOver) return;
+    startAimFromInput(event.center.x, event.center.y);
+  });
+
+  gestureManager.on("panmove", (event) => {
+    if (!state.gestureEnabled || state.paused || state.gameOver) return;
+    updateAimFromDrag(event.center.x, event.center.y);
+  });
+
+  gestureManager.on("panend pancancel", (event) => {
+    if (!state.gestureEnabled || state.paused || state.gameOver) return;
+    releaseShotFromInput(event.center.x, event.center.y);
+  });
 }
 
 function gridToWorld(row, col) {
@@ -677,12 +746,12 @@ function updateAimFromDrag(currentX, currentY) {
 }
 
 function handlePointerDown(event) {
-  state.input.dragging = true;
-  state.input.dragStart = { x: event.clientX, y: event.clientY };
-  state.aim.active = true;
+  if (state.gestureEnabled && event.pointerType !== "mouse") return;
+  startAimFromInput(event.clientX, event.clientY);
 }
 
 function handlePointerMove(event) {
+  if (state.gestureEnabled && event.pointerType !== "mouse") return;
   state.input.pointer = { x: event.clientX, y: event.clientY };
 
   if (state.input.dragging) {
@@ -691,18 +760,8 @@ function handlePointerMove(event) {
 }
 
 function handlePointerUp(event) {
-  if (!state.input.dragging) return;
-  state.input.dragging = false;
-
-  const pullX = state.input.dragStart.x - event.clientX;
-  const pullY = state.input.dragStart.y - event.clientY;
-  const dist = Math.hypot(pullX, pullY);
-  const power = clamp(dist / (state.width * 0.3), 0, 1);
-  if (power > 0.08) {
-    const angle = Math.atan2(pullY, pullX);
-    shootBubble(clamp(angle, state.config.minAngle, state.config.maxAngle), power);
-  }
-  state.aim.active = false;
+  if (state.gestureEnabled && event.pointerType !== "mouse") return;
+  releaseShotFromInput(event.clientX, event.clientY);
 }
 
 function toggleHints() {
@@ -710,6 +769,16 @@ function toggleHints() {
   toggleHintsBtn.classList.toggle("active", state.hintsEnabled);
   toggleHintsBtn.textContent = state.hintsEnabled ? "Dicas: Ativas" : "Dicas: Desligadas";
   state.needsHint = true;
+}
+
+function toggleGestures() {
+  if (!supportsGestures()) {
+    updateStatus("Gestos indisponíveis neste navegador.");
+    return;
+  }
+  state.gestureEnabled = !state.gestureEnabled;
+  updateGestureButton();
+  updateStatus(state.gestureEnabled ? "Gestos ativos. Arraste na tela." : "Gestos desligados. Use o mouse.");
 }
 
 function togglePause() {
@@ -758,6 +827,9 @@ function bindEvents() {
   canvas.addEventListener("pointerleave", handlePointerUp);
 
   toggleHintsBtn.addEventListener("click", toggleHints);
+  if (toggleGestureBtn) {
+    toggleGestureBtn.addEventListener("click", toggleGestures);
+  }
   pauseBtn.addEventListener("click", togglePause);
   restartBtn.addEventListener("click", () => {
     initGame();
@@ -767,6 +839,9 @@ function bindEvents() {
 function start() {
   resize();
   loadBestScore();
+  state.gestureEnabled = shouldEnableGestures();
+  updateGestureButton();
+  setupGestures();
   initGame();
   bindEvents();
   requestAnimationFrame(gameLoop);

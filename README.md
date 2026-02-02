@@ -10,8 +10,9 @@
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/docs/Web/JavaScript)
 [![Canvas](https://img.shields.io/badge/Canvas-2D-111111?style=flat-square)](https://developer.mozilla.org/docs/Web/API/Canvas_API)
+[![Hammer.js](https://img.shields.io/badge/Hammer.js-2.0.8-111111?style=flat-square)](https://hammerjs.github.io/)
 
-Bubble shooter com controle por mouse, dicas táticas locais e foco em performance.
+Bubble shooter com controle por toque ou mouse, dicas táticas locais e foco em performance.
 
 ## Demo
 
@@ -23,7 +24,7 @@ Slingshot combina física em canvas com uma camada de dicas de jogada para acele
 
 ## Principais Recursos
 
-- Controle por mouse com mira elástica
+- Controle por toque (gestos) e mouse
 - Dicas de jogada calculadas localmente
 - Ricochete lateral e grade hexagonal
 - Recorde salvo no navegador

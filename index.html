@@ -30,6 +30,7 @@
           </div>
         </div>
         <div class="hud-right">
+          <button id="toggleGesture" class="pill">Gestos: Desligados</button>
           <button id="toggleHints" class="pill active">Dicas: Ativas</button>
           <button id="pause" class="pill">Pausar</button>
         </div>
@@ -41,8 +42,8 @@
       </div>
 
       <div id="footer">
-        <div class="help">Clique e arraste para mirar, solte para lançar.</div>
-        <div id="status">Use o mouse para mirar e disparar.</div>
+        <div class="help">Arraste para mirar e solte para lançar.</div>
+        <div id="status">Mouse ou toque: arraste para mirar.</div>
         <div class="credits">
           Desenvolvido por Matheus Siqueira ·
           <a href="https://www.matheussiqueira.dev" target="_blank" rel="noreferrer">www.matheussiqueira.dev</a>
@@ -57,6 +58,7 @@
         </div>
       </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
     <script src="main.js"></script>
   </body>
 </html>
