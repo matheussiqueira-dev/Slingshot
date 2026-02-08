@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Slingshot: bubble shooter tático com física em canvas, sugestões inteligentes e leaderboard online."
+    />
+    <title>Slingshot | Arcade Strategy Shooter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb bg-orb-a" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-b" aria-hidden="true"></div>
+
+    <main class="app-shell" aria-label="Jogo Slingshot">
+      <aside class="panel panel-left" aria-label="Painel de status">
+        <div class="brand-card">
+          <p class="eyebrow">Arcade Strategy Shooter</p>
+          <h1>Slingshot</h1>
+          <p class="subtitle">Domine ângulos, controle o caos e maximize combos.</p>
+        </div>
+
+        <section class="stats" aria-label="Estatísticas">
+          <article class="stat-tile">
+            <p>Pontuação</p>
+            <strong id="score">0</strong>
+          </article>
+          <article class="stat-tile">
+            <p>Recorde</p>
+            <strong id="bestScore">0</strong>
+          </article>
+          <article class="stat-tile">
+            <p>Nível</p>
+            <strong id="level">1</strong>
+          </article>
+          <article class="stat-tile">
+            <p>Combos</p>
+            <strong id="combo">0</strong>
+          </article>
+        </section>
+
+        <section class="controls" aria-label="Controles do jogo">
+          <button id="toggleHints" class="btn btn-chip" type="button" aria-pressed="true">Dicas: Ativas</button>
+          <button id="toggleZen" class="btn btn-chip" type="button" aria-pressed="false">Modo Zen: Off</button>
+          <button id="pause" class="btn btn-chip" type="button" aria-pressed="false">Pausar</button>
+          <button id="restartQuick" class="btn btn-secondary" type="button">Reiniciar partida</button>
+        </section>
+
+        <section class="guide" aria-label="Guia rápido">
+          <h2>Como jogar</h2>
+          <ul>
+            <li>Arraste para mirar e solte para lançar.</li>
+            <li>Conecte 3+ bolhas da mesma cor para estourar.</li>
+            <li>Use ricochete nas laterais para ângulos críticos.</li>
+          </ul>
+        </section>
+      </aside>
+
+      <section class="arena" aria-label="Área principal do jogo">
+        <header class="arena-header">
+          <p id="status" role="status" aria-live="polite">Pronto. Arraste para mirar e lançar.</p>
+          <div class="next-bubble-wrap" aria-label="Próxima bolha">
+            <span>Próxima</span>
+            <div id="nextBubblePreview" class="next-bubble-preview" aria-hidden="true"></div>
+          </div>
+        </header>
+
+        <canvas id="gameCanvas" role="img" aria-label="Campo de jogo em canvas"></canvas>
+      </section>
+
+      <aside class="panel panel-right" aria-label="Painel de assistência e ranking">
+        <section class="assistant" aria-label="Assistente tático">
+          <h2>Assistente tático</h2>
+          <p id="assistantMessage">As dicas de jogada aparecem aqui.</p>
+        </section>
+
+        <section class="profile" aria-label="Perfil do jogador">
+          <label for="playerName">Apelido no ranking</label>
+          <input
+            id="playerName"
+            name="playerName"
+            maxlength="20"
+            autocomplete="nickname"
+            placeholder="Seu nome"
+            type="text"
+          />
+          <small>Somente letras, números, espaço, _ e -.</small>
+        </section>
+
+        <section class="leaderboard" aria-label="Leaderboard online">
+          <div class="leaderboard-head">
+            <h2>Top Players</h2>
+            <button id="refreshLeaderboard" class="btn btn-ghost" type="button">Atualizar</button>
+          </div>
+          <ol id="leaderboardList" class="leaderboard-list">
+            <li class="placeholder">Carregando ranking...</li>
+          </ol>
+        </section>
+
+        <footer class="credits">
+          Desenvolvido por Matheus Siqueira
+          <a href="https://www.matheussiqueira.dev/" target="_blank" rel="noreferrer">matheussiqueira.dev</a>
+        </footer>
+      </aside>
+    </main>
+
+    <section id="overlay" class="overlay hidden" aria-hidden="true">
+      <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+        <p class="pill">Partida encerrada</p>
+        <h2 id="gameOverTitle">As bolhas avançaram demais</h2>
+        <p id="gameOverSummary">Sua pontuação foi 0.</p>
+        <div class="overlay-actions">
+          <button id="submitScore" class="btn btn-primary" type="button">Enviar pontuação</button>
+          <button id="restart" class="btn btn-secondary" type="button">Jogar novamente</button>
+        </div>
+      </div>
+    </section>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>

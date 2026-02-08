@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {
+      "playerName": "Matheus",
+      "score": 1420,
+      "level": 4,
+      "combo": 5,
+      "mode": "standard",
+      "createdAt": "2026-02-08T18:00:00.000Z"
+    },
+    {
+      "playerName": "Luna",
+      "score": 1180,
+      "level": 3,
+      "combo": 4,
+      "mode": "standard",
+      "createdAt": "2026-02-08T18:10:00.000Z"
+    }
+  ]
+}
