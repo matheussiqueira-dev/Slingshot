@@ -79,7 +79,7 @@ export function createApp(options = {}) {
 
   app.use("/api/v1", apiRouter);
 
-  const clientDirectory = path.resolve(__dirname, "..", "..", "..", "client");
+  const clientDirectory = path.resolve(__dirname, "..", "..", "client");
   app.use(express.static(clientDirectory));
 
   app.get("*", (req, res, next) => {
