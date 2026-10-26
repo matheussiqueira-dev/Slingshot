@@ -7,3 +7,7 @@ server/data/*.tmp
 
 .claude/
 .cto-toolkit/
+
+# Local environment files (may contain secrets)
+.env.local
+.env.*.local
