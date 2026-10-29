@@ -2,18 +2,34 @@ import { API_CONFIG, STORAGE_KEYS } from "../config/game-config.js";
 import { fetchJson } from "./api-client.js";
 import { sanitizePlayerName } from "../utils/string.js";
 
+export const LEADERBOARD_SOURCE = Object.freeze({
+  remote: "remote",
+  local: "local",
+});
+
 export class LeaderboardService {
-  constructor(storage) {
+  constructor(storage, { apiBaseUrl = API_CONFIG.baseUrl, request = fetchJson, timeoutMs = API_CONFIG.timeoutMs } = {}) {
     this.storage = storage;
+    this.apiBaseUrl = apiBaseUrl || null;
+    this.request = request;
+    this.timeoutMs = timeoutMs;
+  }
+
+  get hasRemote() {
+    return this.apiBaseUrl !== null;
   }
 
   async getTop(limit = 10) {
+    if (!this.hasRemote) {
+      return { source: LEADERBOARD_SOURCE.local, entries: this.getLocalTop(limit) };
+    }
+
     try {
-      const payload = await fetchJson(`${API_CONFIG.baseUrl}/leaderboard?limit=${limit}`, {}, API_CONFIG.timeoutMs);
+      const payload = await this.request(`${this.apiBaseUrl}/leaderboard?limit=${limit}`, {}, this.timeoutMs);
       const entries = Array.isArray(payload.data) ? payload.data : [];
-      return entries.map((entry) => this.normalizeEntry(entry));
+      return { source: LEADERBOARD_SOURCE.remote, entries: entries.map((entry) => this.normalizeEntry(entry)) };
     } catch {
-      return this.getLocalTop(limit);
+      return { source: LEADERBOARD_SOURCE.local, entries: this.getLocalTop(limit) };
     }
   }
 
@@ -30,14 +46,18 @@ export class LeaderboardService {
       return { accepted: false, reason: "score_zero" };
     }
 
+    if (!this.hasRemote) {
+      return this.saveLocally(safeEntry, { localOnly: true });
+    }
+
     try {
-      const payload = await fetchJson(
-        `${API_CONFIG.baseUrl}/leaderboard`,
+      const payload = await this.request(
+        `${this.apiBaseUrl}/leaderboard`,
         {
           method: "POST",
           body: JSON.stringify(safeEntry),
         },
-        API_CONFIG.timeoutMs,
+        this.timeoutMs,
       );
 
       return {
@@ -45,17 +65,22 @@ export class LeaderboardService {
         entry: this.normalizeEntry(payload.data),
       };
     } catch {
-      const fallbackEntry = {
-        ...safeEntry,
-        createdAt: new Date().toISOString(),
-      };
-      this.addLocalEntry(fallbackEntry);
-      return {
-        accepted: true,
-        entry: fallbackEntry,
-        fallback: true,
-      };
+      return this.saveLocally(safeEntry, { localOnly: false });
     }
+  }
+
+  saveLocally(safeEntry, { localOnly }) {
+    const fallbackEntry = {
+      ...safeEntry,
+      createdAt: new Date().toISOString(),
+    };
+    this.addLocalEntry(fallbackEntry);
+    return {
+      accepted: true,
+      entry: fallbackEntry,
+      fallback: true,
+      localOnly,
+    };
   }
 
   getLocalTop(limit = 10) {

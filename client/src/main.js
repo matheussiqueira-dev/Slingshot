@@ -36,9 +36,15 @@ function resizeGame() {
 }
 
 async function refreshLeaderboard() {
-  ui.renderLeaderboard([]);
-  const entries = await leaderboard.getTop(10);
-  ui.renderLeaderboard(entries);
+  const { source, entries } = await leaderboard.getTop(10);
+  ui.renderLeaderboard(entries, source);
+}
+
+function describeSubmitResult(result) {
+  if (result.localOnly) {
+    return "Pontuação salva neste navegador.";
+  }
+  return result.fallback ? "Pontuação salva localmente (API indisponível)." : "Pontuação enviada ao leaderboard.";
 }
 
 async function submitScore(playerName) {
@@ -51,7 +57,7 @@ async function submitScore(playerName) {
   });
 
   if (result.accepted) {
-    ui.updateStatus(result.fallback ? "Pontuação salva localmente (API indisponível)." : "Pontuação enviada ao leaderboard.");
+    ui.updateStatus(describeSubmitResult(result));
     await refreshLeaderboard();
   }
 }

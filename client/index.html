@@ -7,6 +7,7 @@
       name="description"
       content="Slingshot: bubble shooter tático com física em canvas, sugestões inteligentes e leaderboard online."
     />
+    <meta name="slingshot-api-base" content="" />
     <title>Slingshot | Arcade Strategy Shooter</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -97,9 +98,10 @@
 
         <section class="leaderboard" aria-label="Leaderboard online">
           <div class="leaderboard-head">
-            <h2>Top Players</h2>
+            <h2 id="leaderboardTitle">Top Players</h2>
             <button id="refreshLeaderboard" class="btn btn-ghost" type="button">Atualizar</button>
           </div>
+          <p id="leaderboardNote" class="leaderboard-note" hidden>Salvo neste navegador</p>
           <ol id="leaderboardList" class="leaderboard-list">
             <li class="placeholder">Carregando ranking...</li>
           </ol>

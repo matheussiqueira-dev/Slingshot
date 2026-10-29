@@ -6,7 +6,7 @@ import test from "node:test";
 
 import request from "supertest";
 
-import { createApp } from "../server/src/app.js";
+import { createApp, injectApiBase } from "../server/src/app.js";
 
 function createTempLeaderboardPath(name) {
   return path.join(os.tmpdir(), `slingshot-${name}-${Date.now()}-${Math.random().toString(16).slice(2)}.json`);
@@ -92,4 +92,31 @@ test("POST + GET /api/v1/leaderboard persists and returns ranking", async () => 
   assert.equal(listResponse.body.data[0].mode, "zen");
 
   await fs.rm(leaderboardPath, { force: true });
+});
+
+test("HTML responses advertise the same-origin API base to the client", async () => {
+  const leaderboardPath = createTempLeaderboardPath("html");
+  const app = createApp({
+    env: {
+      nodeEnv: "test",
+      leaderboardFile: leaderboardPath,
+      rateLimitMax: 1000,
+    },
+  });
+
+  for (const route of ["/", "/index.html", "/qualquer-rota"]) {
+    const response = await request(app).get(route);
+    assert.equal(response.status, 200);
+    assert.match(response.headers["content-type"], /text\/html/);
+    assert.match(response.text, /<meta name="slingshot-api-base" content="\/api\/v1" \/>/);
+  }
+
+  const asset = await request(app).get("/styles.css");
+  assert.equal(asset.status, 200);
+
+  await fs.rm(leaderboardPath, { force: true });
+});
+
+test("injectApiBase fails loudly when the meta tag is missing", () => {
+  assert.throws(() => injectApiBase("<html></html>"), /slingshot-api-base/);
 });

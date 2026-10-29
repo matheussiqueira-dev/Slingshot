@@ -1,4 +1,5 @@
 import { degToRad } from "../utils/math.js";
+import { resolveApiBaseUrl } from "./api-base.js";
 
 export const STORAGE_KEYS = {
   bestScore: "slingshot_best_score_v2",
@@ -40,6 +41,6 @@ export const ODD_NEIGHBOR_OFFSETS = [
 ];
 
 export const API_CONFIG = {
-  baseUrl: "/api/v1",
+  baseUrl: typeof document === "undefined" ? null : resolveApiBaseUrl(document),
   timeoutMs: 6000,
 };

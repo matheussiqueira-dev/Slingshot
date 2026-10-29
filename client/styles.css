@@ -357,6 +357,12 @@ body {
   font-weight: 700;
 }
 
+.leaderboard-note {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
 .leaderboard-list .placeholder {
   display: block;
   color: var(--text-muted);

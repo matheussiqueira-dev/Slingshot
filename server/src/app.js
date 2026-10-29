@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -19,6 +20,16 @@ import { LeaderboardService } from "./modules/leaderboard/leaderboard.service.js
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+export const API_BASE_PATH = "/api/v1";
+const API_BASE_META_PATTERN = /<meta name="slingshot-api-base" content="[^"]*"\s*\/>/;
+
+export function injectApiBase(html, apiBasePath = API_BASE_PATH) {
+  if (!API_BASE_META_PATTERN.test(html)) {
+    throw new Error("client/index.html is missing the slingshot-api-base meta tag");
+  }
+  return html.replace(API_BASE_META_PATTERN, `<meta name="slingshot-api-base" content="${apiBasePath}" />`);
+}
 
 export function createApp(options = {}) {
   const effectiveEnv = {
@@ -77,16 +88,20 @@ export function createApp(options = {}) {
   apiRouter.use(createHealthRouter());
   apiRouter.use(createLeaderboardRouter(leaderboardController));
 
-  app.use("/api/v1", apiRouter);
+  app.use(API_BASE_PATH, apiRouter);
 
   const clientDirectory = path.resolve(__dirname, "..", "..", "client");
-  app.use(express.static(clientDirectory));
+  const indexHtml = injectApiBase(fs.readFileSync(path.join(clientDirectory, "index.html"), "utf8"));
+  const sendIndex = (_req, res) => res.type("html").send(indexHtml);
+
+  app.get(["/", "/index.html"], sendIndex);
+  app.use(express.static(clientDirectory, { index: false }));
 
   app.get("*", (req, res, next) => {
     if (req.path.startsWith("/api/")) {
       return next();
     }
-    return res.sendFile(path.join(clientDirectory, "index.html"));
+    return sendIndex(req, res);
   });
 
   app.use(notFoundMiddleware);

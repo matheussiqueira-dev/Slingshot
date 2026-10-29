@@ -23,6 +23,8 @@ export class UIController {
       overlay: document.getElementById("overlay"),
       summary: document.getElementById("gameOverSummary"),
       leaderboardList: document.getElementById("leaderboardList"),
+      leaderboardTitle: document.getElementById("leaderboardTitle"),
+      leaderboardNote: document.getElementById("leaderboardNote"),
       refreshLeaderboardButton: document.getElementById("refreshLeaderboard"),
       playerName: document.getElementById("playerName"),
       nextBubblePreview: document.getElementById("nextBubblePreview"),
@@ -133,7 +135,10 @@ export class UIController {
     this.elements.overlay.setAttribute("aria-hidden", "true");
   }
 
-  renderLeaderboard(entries) {
+  renderLeaderboard(entries, source = "remote") {
+    const isLocal = source === "local";
+    this.elements.leaderboardTitle.textContent = isLocal ? "Seus melhores resultados" : "Top Players";
+    this.elements.leaderboardNote.hidden = !isLocal;
     renderLeaderboardList(document, this.elements.leaderboardList, entries);
   }
 }

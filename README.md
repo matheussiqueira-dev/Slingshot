@@ -198,6 +198,10 @@ Payload:
 3. Configurar `NODE_ENV=production`, `CORS_ORIGIN` e limites de rate.
 4. Substituir persistência JSON por banco (PostgreSQL/Redis) em produção escalável.
 
+### Publicação estática (sem API)
+
+O cliente só chama a API quando a página traz `<meta name="slingshot-api-base" content="/api/v1" />`. O servidor Express injeta esse valor ao entregar o `index.html`; publicado como arquivos estáticos, o meta fica vazio, o jogo não faz nenhuma chamada à API e o ranking aparece como "Seus melhores resultados", salvo neste navegador.
+
 ## Boas Práticas Adotadas
 
 - Versionamento de API e contratos explícitos.
