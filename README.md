@@ -112,7 +112,7 @@ tests/
 
 - API versionada: `GET/POST /api/v1/leaderboard`, `GET /api/v1/health`.
 - Validação estrita de payload e query com Zod.
-- Hardening: Helmet, rate-limit, CORS controlável e limite de body JSON.
+- Hardening: Helmet com Content Security Policy restritiva, rate-limit, CORS restrito por padrão e limite de body JSON.
 - Tratamento global de erros com resposta padronizada e `request-id`.
 - Logging HTTP estruturado com correlação de requisição.
 
@@ -160,7 +160,7 @@ npm test
 |---|---:|---|
 | `PORT` | `3000` | Porta HTTP |
 | `NODE_ENV` | `development` | Ambiente de execução |
-| `CORS_ORIGIN` | `*` | Origem permitida para CORS |
+| `CORS_ORIGIN` | vazio | Origens permitidas para CORS, separadas por vírgula; vazio aceita só a mesma origem e `*` libera todas (somente se definido explicitamente) |
 | `RATE_LIMIT_WINDOW_MS` | `60000` | Janela do rate limit |
 | `RATE_LIMIT_MAX` | `160` | Máximo de requests por janela |
 | `LEADERBOARD_FILE` | `server/data/leaderboard.json` | Caminho da persistência |

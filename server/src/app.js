@@ -8,7 +8,7 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import morgan from "morgan";
 
-import { env as envDefaults } from "./config/env.js";
+import { env as envDefaults, parseCorsOrigins } from "./config/env.js";
 import { errorHandlerMiddleware } from "./middleware/error-handler.js";
 import { notFoundMiddleware } from "./middleware/not-found.js";
 import { requestIdMiddleware } from "./middleware/request-id.js";
@@ -31,6 +31,27 @@ export function injectApiBase(html, apiBasePath = API_BASE_PATH) {
   return html.replace(API_BASE_META_PATTERN, `<meta name="slingshot-api-base" content="${apiBasePath}" />`);
 }
 
+export const CONTENT_SECURITY_POLICY = Object.freeze({
+  defaultSrc: ["'self'"],
+  baseUri: ["'self'"],
+  scriptSrc: ["'self'"],
+  styleSrc: ["'self'", "https://fonts.googleapis.com"],
+  fontSrc: ["'self'", "https://fonts.gstatic.com"],
+  imgSrc: ["'self'", "data:"],
+  connectSrc: ["'self'"],
+  objectSrc: ["'none'"],
+  frameAncestors: ["'none'"],
+  formAction: ["'self'"],
+});
+
+function resolveCorsOrigin(corsOrigin) {
+  const origins = Array.isArray(corsOrigin) || corsOrigin === "*" ? corsOrigin : parseCorsOrigins(corsOrigin);
+  if (origins === "*") {
+    return true;
+  }
+  return origins.length > 0 ? origins : false;
+}
+
 export function createApp(options = {}) {
   const effectiveEnv = {
     ...envDefaults,
@@ -47,14 +68,17 @@ export function createApp(options = {}) {
 
   app.use(
     helmet({
-      contentSecurityPolicy: false,
+      contentSecurityPolicy: {
+        useDefaults: false,
+        directives: CONTENT_SECURITY_POLICY,
+      },
       crossOriginEmbedderPolicy: false,
     }),
   );
 
   app.use(
     cors({
-      origin: effectiveEnv.corsOrigin === "*" ? true : effectiveEnv.corsOrigin,
+      origin: resolveCorsOrigin(effectiveEnv.corsOrigin),
       methods: ["GET", "POST", "OPTIONS"],
     }),
   );
