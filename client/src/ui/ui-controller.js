@@ -1,5 +1,6 @@
 import { STORAGE_KEYS } from "../config/game-config.js";
 import { sanitizePlayerName } from "../utils/string.js";
+import { renderLeaderboardList } from "./leaderboard-view.js";
 
 export class UIController {
   constructor(eventBus, storage) {
@@ -133,19 +134,6 @@ export class UIController {
   }
 
   renderLeaderboard(entries) {
-    if (!entries.length) {
-      this.elements.leaderboardList.innerHTML = '<li class="placeholder">Nenhuma pontuação registrada ainda.</li>';
-      return;
-    }
-
-    this.elements.leaderboardList.innerHTML = entries
-      .map((entry, index) => {
-        return `<li>
-          <span class="rank">${index + 1}</span>
-          <span class="name" title="${entry.playerName}">${entry.playerName}</span>
-          <span class="points">${entry.score}</span>
-        </li>`;
-      })
-      .join("");
+    renderLeaderboardList(document, this.elements.leaderboardList, entries);
   }
 }
