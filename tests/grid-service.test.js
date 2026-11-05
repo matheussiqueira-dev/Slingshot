@@ -144,7 +144,7 @@ test("the hint picks the largest cluster the shot can complete", () => {
 
   assert.equal(hint.size, 6, "the cell between both groups joins them");
   assert.equal(hint.row, 1);
-  assert.equal(hint.col, 1);
+  assert.equal(hint.col, 0, "ties keep the first cell found");
 });
 
 test("the hint favors the higher cell when clusters have the same size", () => {
