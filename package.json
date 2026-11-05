@@ -4,7 +4,7 @@
   "description": "Arcade bubble shooter com arquitetura modular, leaderboard online e UX/UI profissional",
   "type": "module",
   "engines": {
-    "node": ">=18.18"
+    "node": ">=22"
   },
   "scripts": {
     "dev": "node --watch server/src/index.js",
