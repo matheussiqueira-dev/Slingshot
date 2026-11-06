@@ -1,9 +1,10 @@
 name: CI
 
 on:
-  pull_request:
-  push:
-    branches: [main]
+  # Execução manual (Actions -> "CI" -> Run workflow). Política de automação mínima da conta
+  # (auditoria FinOps de 06/11/2026): sem push, pull_request ou agendamento automáticos, para não
+  # consumir a franquia de minutos. Rode antes de divulgar ou publicar uma mudança relevante.
+  workflow_dispatch:
 
 permissions:
   contents: read
